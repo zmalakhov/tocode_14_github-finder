@@ -2,13 +2,20 @@
     <div class="wrapper-content wrapper-content--fixed">
         <section>
             <div class="container">
+                <!--errors-->
+                <div class="error" v-if="error">
+                    <p> {{ error }} </p>
+                </div>
+
                 <!--search-->
                 <search
                         :value="search"
                         placeholder="Type user name"
                         @search="search = $event"
                 />
-                <button class="btn btnPrimary" @click="getRepos">Search</button>
+                <button v-if="!repos" class="btn btnPrimary" @click="getRepos">Search</button>
+                <button v-else class="btn btnPrimary" @click="getRepos">Search Again</button>
+
 
                 <!--repos__wrapper-->
                 <div class="repos__wrapper" v-if="repos">
@@ -35,6 +42,7 @@
         data() {
             return {
                 search: '',
+                error: null,
                 repos: null
             }
         },
@@ -44,10 +52,13 @@
                     .get(`https://api.github.com/users/${this.search}/repos`)
                     .then(res => {
                         // console.log(res);
+                        this.error = null
                         this.repos = res.data
                     })
                     .catch(err => {
-                        console.log(err);
+                        // console.log(err);
+                        this.repos = null
+                        this.error = 'Can`t find this user'
                     })
 
 
@@ -81,5 +92,9 @@
         margin-bottom: 10px;
         padding: 10px 0;
         border-bottom: 1px solid #dbdbdb;
+    }
+
+    .error{
+        margin-bottom: 20px;
     }
 </style>
